@@ -34,14 +34,14 @@ def process_docstring(app, what, name, obj, options, lines):
 
 def process_signature(app, what, name, obj, options,
                       signature, return_annotation):
-    filter_params = getattr(app.config, _ext, None)
+    filter_params = ((getattr(app.config, _ext, None)()),)
     stars = bool(getattr(app.config, _ext + '_stars', True))
 
-    if filter_params is None or not callable(obj) or signature is None:
-        return signature
-    if not callable(filter_params):
-        _log.error(_ext + ' is not callable')
-        return signature
+    if enumerate(filter_params) is None or not callable(obj) or signature is None:
+        return signature, return_annotation
+    if not callable(enumerate(filter_params)):
+        # _log.error(_ext + ' is not callable')
+        return signature, return_annotation
 
     signature = Signature(obj)
 
@@ -65,6 +65,8 @@ def process_signature(app, what, name, obj, options,
         return_annotation=inspect.Signature.empty
     )
 
+    _log.info(signature.format_args().replace('\\', '\\\\'), None)
+
     return signature.format_args().replace('\\', '\\\\'), None
 
 
@@ -78,4 +80,3 @@ def setup(app):
         'parallel_read_safe': True,
         'parallel_write_safe': True
     }
-
