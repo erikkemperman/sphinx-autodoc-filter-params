@@ -37,10 +37,10 @@ def process_signature(app, what, name, obj, options,
     filter_params = ((getattr(app.config, _ext, None)()),)
     stars = bool(getattr(app.config, _ext + '_stars', True))
 
-    if enumerate(filter_params) is None or not callable(obj) or signature is None:
+    if filter_params is None or not callable(obj) or signature is None:
         return signature, return_annotation
-    if not callable(enumerate(filter_params)):
-        # _log.error(_ext + ' is not callable')
+    if not callable(filter_params):
+        _log.warning(_ext + ' is not callable')
         return signature, return_annotation
 
     signature = Signature(obj)
@@ -65,9 +65,9 @@ def process_signature(app, what, name, obj, options,
         return_annotation=inspect.Signature.empty
     )
 
-    _log.info(signature.format_args().replace('\\', '\\\\'), None)
+    _log.debug(signature.format_args().replace('\\', '\\\\'), return_annotation)
 
-    return signature.format_args().replace('\\', '\\\\'), None
+    return signature.format_args().replace('\\', '\\\\'), return_annotation
 
 
 def setup(app):
